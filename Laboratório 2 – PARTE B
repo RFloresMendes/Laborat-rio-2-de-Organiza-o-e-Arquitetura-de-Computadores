@@ -1,0 +1,18 @@
+Laboratório 2 – PARTE B
+– ULA e FPULA –
+Objetivos:
+ Treinar ao aluno com a Linguagem de Descrição de Hardware Verilog;
+ Familiarizar o aluno com a plataforma de desenvolvimento FPGA DE2 da Altera e o software QUARTUS-II;
+ Desenvolver a capacidade de análise e síntese de sistemas digitais usando HDL;
+1) (5.0) Unidade Lógico Aritmética de Inteiros:
+a) (0.0) Para a ULA MIPS32 fornecida, descreva suas funções e levante a tabela verdade de seus códigos de operação.
+b) (1.0) Verifique cada operação por simulação de forma de onda.
+c) (1.5) Sintetize esta ULA na placa DE2-70 e verifique, em tempo real, cada operação implementada usando a ferramenta SignalTap Analyser. Filme o experimento e coloque no YouTube.
+d) (1.5) Levante os requisitos físicos necessários, isto é, número de elementos lógicos, tempos envolvidos e máxima frequência de clock utilizável para cada operação da ULA.
+e) (1.0) Retire as operações de divisão e módulo. Sintetize novamente e levante os novos requisitos físicos da ULA. Comente.
+2) (5.0) Unidade Aritmética de Ponto Flutuante:
+a) (0.0) Para a FPULA MIPS fornecida, descreva suas funções (MegaWizard Plug-In Manager Edit) e levante a tabela verdade de seus códigos de operação.
+b) (1.0) Verifique cada operação por simulação de forma de onda.
+c) (1.5) Sintetize esta FPULA na placa DE2-70 e verifique, em tempo real, cada operação implementada usando a ferramenta SignalTap Analyser. Filme o experimento e coloque no YouTube.
+d) (1.5) Levante os requisitos físicos, isto é, número de elementos lógicos necessários, número de ciclos, tempos envolvidos e máxima frequência de clock utilizável para cada operação da FPULA.
+e) (1.0) Qual a operação que mais impacta em cada requisito físico?
