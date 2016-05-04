@@ -1,0 +1,37 @@
+Laboratório 2 – PARTE A
+- Assembly MIPS Aritmética Fracionária
+
+Objetivos:
+ Treinar o aluno com o Simulador/Montador MARS;
+ Desenvolver a capacidade de codificação de algoritmos em linguagem Assembly MIPS;
+ Desenvolver a capacidade de análise de desempenho de algoritmos em Assembly;
+(3.0) 1) Cálculo das raízes da equação de segundo grau usando operações em ponto flutuante precisão dupla.
+Dado o polinômio de segundo grau:
+2 a.x b.x c  0
+a) (1.0) Escreva um procedimento int baskara(double a, double b, double c) que retorne 1 caso as raízes sejam reais e 2
+caso as raízes sejam complexas conjugadas, e coloque na pilha os valores das raízes no formato IEEE 754 Precisão
+Dupla.
+b) (1.0) Escreva um procedimento void show(int t) que receba o tipo (t=1 raízes reais, t=2 raízes complexas) e apresente
+na tela as raízes, conforme os modelos abaixo, que estão na pilha retirando-as da mesma:
+Para raízes reais: Para raízes complexas:
+R(1)=1234.0000 R(1)=1234.0000 + 5678.0000 i
+R(2)=5678.0000 R(2)=1234.0000 – 5678.0000 i
+c) (1.0) Escreva as saídas obtidas para os seguintes polinômios [a, b, c]:
+c.1) [1, 0, -9.86960440] c.2) [1, 0, 0] c.3) [1, 99, 2459] c.4) [1, -2468, 33762440] c.5) [0, 10, 100]
+(7.0) 2) Cálculo das raízes da equação de segundo grau usando operações em ponto fixo de 32 bits.
+Dada a equação de segundo grau:
+2 a.x b.x c  0
+a) (3.0) Escreva um procedimento int baskara(int a, int b, int c) que retorne 1 caso as raízes sejam reais e 2 caso as
+raízes sejam complexas conjugadas, e coloque na pilha os valores das raízes no formato ponto fixo com um Q
+adequado.
+b) (3.0) Escreva um procedimento void show(int t) que receba o tipo (t=1 raízes reais, t=2 raízes complexas) e apresente
+na tela as raízes, conforme os modelos abaixo, que estão na pilha retirando-as da mesma:
+Para raízes reais: Para raízes complexas:
+R(1)=1234.0000 R(1)=1234.0000 + 5678.0000 i
+R(2)=5678.0000 R(2)=1234.0000 – 5678.0000 i
+c) (1.0) Escreva as saídas obtidas para os seguintes polinômios [a, b, c]:
+c.1) [1, 0, -9.86960440] c.2) [1, 0, 0] c.3) [1, 99, 2459] c.4) [0, 10, 100]
+Dicas:
+Para o item a) você vai precisar implementar procedimentos para as operações de divisão e raiz quadrada em ponto fixo.
+Para o item b) você vai precisar implementar procedimentos que convertam ponto fixo para ponto flutuante.
+Para o item c) os polinômios podem ser entrados já no formato adequado em ponto fixo ou em float.
