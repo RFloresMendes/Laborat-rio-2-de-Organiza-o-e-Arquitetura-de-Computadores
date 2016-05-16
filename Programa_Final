@@ -1,0 +1,423 @@
+#BaskaraPontoFixo
+.data 
+	calculo:.asciiz "Calculo das raizes de um polinomio de segundo grau."
+	a:.asciiz "Digite o valor de a:"	#String que printa na tela a mensagem para digitar o valor de a.
+	be:.asciiz "Digite o valor de b:"	#String que printa na tela a mensagem para digitar o valor de b.
+	c:.asciiz "Digite o valor de c:"	#String que printa na tela a mensagem para digitar o valor de c.
+	Q:.asciiz "Digite o valor de Q:"	#String que printa na tela a mensagem para digitar o valor de Q.
+	newline:.asciiz "\n"			#String para nova linha.
+	space:.asciiz " "			#String para colocar espaço.
+	newl2: .asciiz "\n\n"			#String que pula duas linhas.
+	raiz: .asciiz "R: "
+	raiz1: .asciiz "R(1): "
+	raiz2: .asciiz "R(2): "
+	i: .asciiz "i"
+	mais: .asciiz " + "
+	menos: .asciiz " - "
+	
+.text
+
+li $v0, 4   		#Imprime saudação
+la $a0, calculo
+syscall
+
+li $v0, 4   		#Pula linha
+la $a0, newl2
+syscall
+
+li $v0, 4   
+la $a0, a
+syscall
+
+li $v0,6 		#Lê a do usuário 
+syscall
+
+jal PonFluPonFix	#Pula para função para converter de Ponto Flutuante para Ponto Fixo.
+move $a0, $s2		#Passa o conteudo do registrador $s2 para o registrador $a0.
+
+li $v0, 4   		#Imprime msg
+la $a0, be
+syscall
+
+li $v0,6 		#Lê b do usuário 
+syscall
+
+jal PonFluPonFix	#Pula para função para converter de Ponto Flutuante para Ponto Fixo.
+move $a1, $s2		#Passa o conteudo do registrador $s2 para o registrador $a1.
+
+li $v0, 4   		#Imprime msg
+la $a0, c
+syscall
+
+li $v0, 6 		#Lê c do usuário 
+syscall
+
+jal PonFluPonFix	#Pula para função para converter de Ponto Flutuante para Ponto Fixo.
+move $a2, $s2		#Passa o conteudo do registrador $s2 para o registrador $a2.
+
+bnez $a0, BHASKARA 	#Se a =! 0, pula para bhaskara, se não, continua
+
+move $t4, $a3
+move $t5, $a2
+jal DIVISAO		#Se a = 0, a raiz é -c/b
+
+li $t1, -1
+mul $t6, $t4, $t1
+
+li $v0, 4   		#Pula linha
+la $a0, newl
+syscall
+
+li $v0, 4   		#Imprime raiz
+la $a0, raiz
+syscall
+
+move $a0, $t6
+li $v0, 1      		#Imprime o valor da raiz
+syscall
+
+li $v0, 10
+syscall     		 #Finaliza o programa
+
+BHASKARA:
+			#Calcula o delta:
+li $t4, 4		#Coloca o valor 4 no registrador $t4.
+mul $s3, $a1, $a1 	#Calcula b^2 e coloca em $s3
+mul $s4, $a0, $a3 	#Calcula a.c e coloca em $s4
+mul $s4, $s4, $t4   	#Multiplica a expressão a.c por 4.
+sub $s3, $s3, $s4 	#Faz a subtração [b^2-(4.a.c)] e guarda em $s3
+
+bgtz $s3, REALDOIS      #Verifica se o delta é maior ou igual a 0. Se nenhuma dessas condições for atendida, ele continua.
+beqz $s3, REALZERO     
+
+#Imaginário
+
+li $t1, -1		#Coloca o valor -1 no registrador $t1.
+li $t2, 2		#Coloca o valor 2 no registrador $t2.
+
+mul $s5, $t1, $a1 	#Gera -b e guarda em $s5.
+mul $s6, $s3, $t1 	#Multiplica o delta por -1 e guarda em $s6.
+
+move $t2, $s6		#Coloca o conteudo do registrador $s6 no registrador $s1.
+jal RaizQuadrada	#Chama a função para calcular a raiz quadrada.
+	
+mul $s7, $t2, $a0	#Multiplica a por dois.
+move $t4, $s5		#Coloca o conteudo do registrador $s5 no registrador $t4.
+move $t5, $s7		#Coloca o conteudo do registrador $s7 no registrador $t5.
+jal DIVISAO		#Chama a label DIVISAO.
+move $s5,$v0
+
+move $t4, $s6		#Coloca o conteudo do registrador $s6 no registrador $t4.
+move $t5, $s7		#Coloca o conteudo do registrador $s7 no registrador $t5.
+jal DIVISAO		#Chama a label DIVISAO
+move $s6,$v0
+
+addi $sp, $sp, -12	#Aloca espaço na pilha.
+sw $s5, 4($sp)       	#Empilha a parte imaginária
+sw $s6, 0($sp)       	#Empilha a parte real
+li $a3, 2               #Carrega $a3 com 2, indicando que possui duas raizes imaginárias.
+j SHOW
+
+REALDOIS:
+
+li $t1, -1		#Carrega o valor -1 para o registrador $t1.
+li $t2, 2		#Carrega o valor 2 para o registrador $t2.
+
+mul $s5, $t1, $a1  	#Gera -b e guarda em $s5.
+move $t2, $s3		#Coloca o valor do registrador $s3 no registrador $t2.
+jal RaizQuadrada	#Chama a função RaizQuadrada.
+
+add $s5, $s5, $s3  	#Calcula -b + sqrt(delta) e guarda em $s5.
+mul $s7, $t2, $a0  	#Multiplica a por dois.
+
+move $t4, $s5		#Coloca no registrador $t4 o conteudo do registrador $s5.
+move $t5, $s7		#Coloca no registrador $t5 o conteudo do registrador $s7.
+jal DIVISAO
+
+
+addi $sp, $sp, -12
+sw $t2, 4($sp)		#Empilha a primeira raiz
+
+sub $s6, $s6, $s3	#Calcula -b - sqrt(delta) e coloca o resultado em $s6.
+move $t4, $s6		#Coloca o conteudo de $s6 em $t4.
+move $t5, $s7		#Coloca o conteudo de $s7 em $t5.
+jal DIVISAO
+
+sw $t2, 0($sp)		#Empilha a segunda raiz
+
+li $a3, 1               #Carrega o registrador $a3 com 1, indicando que possui duas raizes reais 
+
+j SHOW                  #Pula para o procedimento SHOW
+
+REALZERO:
+
+li $t1, -1
+li $t2, 2         
+
+mul $s5, $t1, $a1  	#Gera -b e guarda em $f10
+mul $s6, $t2, $a0	#Multiplica a por dois.
+
+move $t4, $s5
+move $t5, $s7
+jal DIVISAO
+
+move $t4, $s6
+move $t5, $s7
+jal DIVISAO
+
+addi $sp, $sp, -12
+sw $t2, 4($sp)      		#Empilha a raiz
+sw $t2, 0($sp)       		#Empilha a raiz "De novo :("
+li $a3, 1              		#Carrega o registrador $a3 com 1, indicando que possui duas raizes reais 
+j SHOW
+
+
+RaizQuadrada:
+
+addi $sp, $sp, -4
+sw $ra, 0($sp) 			#põe $ra na pilha para chamar a DIVISAO mais adiante
+move $s1, $t2			#carrega o numero n
+srl $s0, $s1, 1			#divide n por 2 para o palpite inicial
+li $t6, 16			#Faz um load immediato no valor 16 e coloca no registrador $t6.	
+li $t7, 7			#Faz um load immediato no valor  7 e coloca no registrador $t7.
+
+while1:
+	
+div $s2, $s1, $s0		#Faz a divisão entre o numero e o primeiro palpite e armazena no registrador $s2.
+mfhi $t4			#Move o valor que tem no registrador hi para o registrador $t4.
+move $t5, $s1			#Move o valor que está no registrador $s1 para o $t5.
+	
+jal DIVISAO			#Chamada da funcao DIVISAO.
+	
+sllv $s2, $s2, $a2		#Dá um Shift Left Logical para deixar o quociente da divisão no Q utilizado
+add $at, $v0, $s2		#Soma o valor do registrador $v0 com com o valor de $s2 para encontrar o numero completo (inteiro + fração)
+	
+add $t1, $s0, $at		#Soma o palpite anterior com o resultado de (n/palpite)
+li $t8, 2			
+sllv $t8, $t8, $a2 
+	
+div $s2, $t1, $t8
+mfhi $t4			#Move o valor que tem no registrador hi para o registrador $t4.
+move $t5, $t8
+
+jal DIVISAO			#Chamada da funcao DIVISAO
+	
+sllv $s2, $s2, $a2
+add $at, $v0, $s2
+	
+move $t9, $at  			#Palpite para raiz atual no registrador $t9
+move $s0, $t9 			#Palpite para a nova passagem vai estar no registrador $s0.
+addi $t7, $t7, -1
+bne $t7, $zero, while1		#Verifica se a condicao do while já foi satisfeita.
+move $v1, $t9			#retorna o valor da raiz em $v1
+	
+lw $ra, 0($sp) 			#retira $ra da pilha para voltar para a função principal
+addi $sp, $sp, 4		#volta $sp pra posição original
+jr $ra
+
+
+DIVISAO:
+				#Definir os registradores $t4 e $t5 para fazer as operações.
+				#Antigo $a0 = $t4 e $a1 = $t5.
+move $t1, $zero			#Coloca o conteudo do registrador $zero em $t1.
+li $t0, 32 			#Para uma precisão Qn, fazer o for com n+1 (exemplo; Q31, for 32)
+move $v0, $zero			#Coloca o conteudo do registador $zero em $v0.
+srl $t4, $t4, 1			#Faz um srl no registrador $t4 e armazena o valor em $t4.
+srl $t5, $t5, 1			#Faz um srl no registrador $t5 e armazena o valor em $t5.
+	
+loop:	beq $t1, $t0, fim	#Faz uma condição beq no registrador $t0 e $t1 e se verdade pula para fim.
+	
+sltu $t2, $t4, $t5		#Faz um sltu nos registradores $t4 e $t5 e coloca o resultado no registrador $t2.
+xori $t2, $t2, 1		#Faz um xori no registrador $t2 e armazena o resultado no registrador $t2.
+	
+pula:	sll $v0, $v0, 1		#Faz um sll no registrador $v0 e amrazena o resultado no registrador $v0.
+	or $v0 $v0, $t2		#Faz um or entre os registradores $v0 e $t2 e coloca o resultado em $v0.
+	
+beq $t2, $zero, desl		#Faz uma condição beq entre os registradores $zero e $t2, se verdade pula para desl.
+subu $t4, $t4, $t5		#Subitração entre os registradores $t4 e $t5 e coloca o resultado em $t4.
+	
+desl:	sll $t4, $t4, 1		#Aplica um sll no registrador $t4 e armazena o resultado em $t4
+addi $t1, $t1, 1		#Adição entre os registradores $t1 e 1, coloca o resultado em $t1.
+j loop				#Pula para loop
+	
+fim:	jr $ra			#Volta para o endereço em que se encontra o $ra.
+
+
+PonFluPonFix:
+		
+				#Guardando o valor de a.	
+mfc1 $t0,$f0			#Manda para o coprocessador 1.
+move $s1,$t0			#Manda o conteudo do registrador $t0 para o $s1.
+	
+srl  $s3, $t0, 31		#Faz um srl no registrador $t0 e coloca em $s3.
+	
+				#Calculo da mantissa
+sll  $t0, $t0, 9		#Faz um sll no registrador $t0 e coloca em $t0.
+srl  $t0, $t0, 9		#Faz um srl no registrador $t0 e coloca em $t0.
+li   $t1, 0x00800000		#Coloca em $t1 o valor de 0x00800000.
+or   $t2, $t0, $t1		#Faz um or entre os registradores $t0 e $t1 e coloca no registrador $t2.
+	
+				#Calculo do expoente.
+move $t5, $s1			#Coloca o conteudo do registrador $t5 no registrador $s1.
+sll  $t5, $t5, 1		#Faz um sll no registrador $t5 e coloca no registrador $t5.
+srl  $t5, $t5, 24		#Faz um srl no registrador $t5 e coloca no registrador $t5.
+subi $t5, $t5, 127		#Faz uma subitração entre o registrador $t5 e 127, coloca o resultado no registrador $t5.
+	
+				#Conversão ponto fixo.
+sll  $t2, $t2, 8		#Faz um sll no registrador $t2 e coloca o resultado no registrador $t2.
+addi $t3, $zero, 31		#Faz uma adição entre o registrador $zero e 31, coloca o resultado no registrador $t3.
+sub  $t3, $t3, $t5		#Faz uma subtração entre os registradores $t3 e $t5, coloca o resultado no registrador $t3.
+srlv $t4, $t2, $t3		#Faz um srlv no registrador $t2 e coloca o resultado no registrador $t4.
+move $s0, $t4			#Coloca o conteudo de $t4 no registrador $s0.
+sll  $t2, $t2, 1		#Faz um sll no registrador $t2 e armazena em $t2.
+
+sllv  $t2, $t2, $t5		#Faz um sllv no registrador $t2 e coloca o resultado no registrador $t2.
+srl  $t2, $t2, 16		#Faz um srl no registrador $t2 e coloca o resultado no registrador $t2.
+	
+				#Transfirindo o conteudo para $s2
+move $s2, $s0			#Passa o conteudo do registrador $s0 para o registrador $s2.
+sll  $s2, $s2, 16		#Faz um sll no registrador $s2 e armazena no registrador $s2.
+or   $s2, $s2, $t2		#Faz um or entre os registradores $t2 e $s2.
+jr   $ra			#Retorna para o ultimo ponto.
+
+
+
+cvtFixToFloat:
+#verifica se o numero é 0
+	beqz $s5, zero
+	
+#calcular o sinal
+	bgez $s5, maior0 	#Verifica se o número é maior ou igual a 0
+	
+	mul $s5, $s5, -1	#Se o numero for menor que 0, multiplica-se o mesmo por -1 para ser convertido
+	li $s7, 1		#Coloca 1 no bit do sinal
+	sll $s7, $s7, 31	#Coloca o bit do sinal na posição correta
+	j continua		#Pula a parte so numero maior que zero
+	
+maior0: move $s7, $0		#Caso o numero seja positivo, seta o bit do sinal como 0 e segue adiante
+
+continua:		
+# calcular o exponente com floor(log2)
+	move $t1, $s5		#Carrega o número em t1 para ser trabalhado
+	
+	srl $t1, $t1, 17 		#Isola a parte do numero que é maior que 2¹
+	move $t3, $0		#Zera o t3 para guardar o valor do expoente
+
+loop:	beq $t1, $0, fimlog	#Quando $t1 chega em zero, interrompe o cálculo de floor(log2(num))
+	srl $t1, $t1, 1		#Divide t1 por dois
+	addi $t3, $t3, 1		#Soma 1 ao valor atual do expoente
+	j loop			#Volta pro loop
+
+fimlog:	sll $t6, $t3, 23		#Coloca o valor atual do expoente no local correto para float
+	li $t4, 127		#Carrega o numero 127 em t4
+	sll $t4, $t4, 23		#Passa o numero 127 para a posição correta para somar com t4
+	add $t5, $t6, $t4	#Soma 127 ao expoente atual
+	
+# calcular a mantissa
+	addi $t8, $0, 7		#Coloca o número 7 em t8 (23 bits da mantissa -16 bits do Q16)
+	sub $t8, $t8, $t3	#Subtrai desse 7 o valor encontrado do expoente 
+	bgez $t8, positiv	#Verifica se o resultado da subtração acima é maior ou igual a 0
+	mul $t8, $t8, -1	#Se não for, multiplica o resultado por -1 para ficar positivo
+	srlv $t9, $s5, $t8	#Aplica-se um shift right logical desse valor
+	j cont			#Pula a etapa realizada para um resultado da subtração positivo
+
+positiv:
+	sllv $t9, $s5, $t8	#Aplica-se um shift left logical do resultado da subtração
+	
+cont:	sll $t9, $t9, 9		#Garante que os bits anteriores são zero para converter para float
+	srl $t9, $t9, 9
+	
+	# passando para ponto flutuante
+	add $t0, $t9, $t5	#Soma a mantissa e o expoente e guarda em t0
+	add $t0, $t0, $s7	#Soma o bit do sinal ao resultado acima
+	j gocp1
+
+zero:  	move $t0, $0		#Caso o numero seja 0, pula todo o programa e zera o registrador a ser convertido
+
+gocp1:	mtc1 $t0, $f0		#Move para o co-processador 1, salvando o numero em f0
+	jr $ra
+
+SHOW:
+
+li $v0, 4   			#Pula linha
+la $a0, newl
+syscall
+
+li $t0, 2			#Coloca 2 em $t0
+beq $a3, $t0, PRINTIMAG   	#Verifica se $a3 possui o valor 2, se possuir, chama o procedimento que printa raizes imaginárias
+
+li $v0, 4   			#Imprime raiz1
+la $a0, raiz1
+syscall
+
+lw $f12, 8($sp)   #Retira a primeira raiz da pilha e printa
+li $v0, 3
+syscall
+
+li $v0, 4   #Pula linha
+la $a0, newl
+syscall
+
+li $v0, 4   #Imprime raiz2
+la $a0, raiz2
+syscall
+  
+l.d $f12, 0($sp)   #Retira a segunda raiz da pilha e printa
+li $v0, 3
+syscall
+
+addi $sp, $sp, 20  #Desaloca os elementos da pilha
+
+li $v0, 10        #Finaliza o programa
+syscall
+
+PRINTIMAG:
+
+li $v0, 4   #Imprime raiz1
+la $a0, raiz1
+syscall
+
+l.d $f12, 0($sp)  #Retira a parte real da raiz da pilha e printa
+li $v0, 3
+syscall
+
+li $v0, 4   #Imprime mais
+la $a0, mais
+syscall
+  
+l.d $f12, 8($sp) #Retira a parte imaginária raiz da pilha e printa
+li $v0, 3
+syscall
+
+li $v0, 4   #Imprime i
+la $a0, i
+syscall
+
+li $v0, 4   #Pula linha
+la $a0, newl
+syscall
+
+li $v0, 4   #Imprime raiz2
+la $a0, raiz2
+syscall
+
+l.d $f12, 0($sp)  #Retira a parte real da raiz da pilha e printa
+li $v0, 3
+syscall
+
+li $v0, 4   #Imprime menos
+la $a0, menos
+syscall
+  
+l.d $f12, 8($sp)  #Retira a parte imaginária raiz da pilha e printa
+li $v0, 3
+syscall
+
+li $v0, 4   #Imprime i
+la $a0, i
+syscall
+
+addi $sp, $sp, 20  #Desaloca os elementos da pilha
+
+li $v0, 10     #Finaliza o programa
+syscall
